@@ -1,7 +1,8 @@
 from os import getenv
-from datetime import datetime
 
 from crewai import Crew, Process, LLM
+from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
+from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 from dotenv import load_dotenv
 
 from .agents import ChatbotAgents
@@ -18,19 +19,28 @@ class ChatbotSquad:
         llama_llm = self.__get_llama_llm()
         qwen_llm = self.__get_qwen_llm()
         mistral_llm = self.__get_mistral_llm()
+        gemini_llm = self.__get_gemini_llm()
 
         database_tools = [
             ChabotTools.list_database_tables,
             ChabotTools.describe_database_tables,
-            ChabotTools.check_sql_query,
             ChabotTools.execute_sql_query,
         ]
 
+        text_source = TextFileKnowledgeSource(
+            file_paths=["faq.txt"],
+        )
+        pdf_source = PDFKnowledgeSource(file_paths=["user-guide.pdf"])
+
         agents = ChatbotAgents()
-        technical_support = agents.technical_support([], deepseek_llm)
-        database_support = agents.database_support(database_tools, deepseek_llm)
+        leader_support = agents.leader_support(llama_llm)
+        technical_support = agents.technical_support(
+            [text_source, pdf_source], gemini_llm
+        )
+        database_support = agents.database_support(database_tools, gemini_llm)
 
         tasks = ChatbotTasks()
+        resolve_question = tasks.resolve_question(leader_support)
         answer_tchnical_question = tasks.answer_technical_question(technical_support)
         answer_database_question = tasks.answer_database_question(database_support)
 
@@ -40,17 +50,24 @@ class ChatbotSquad:
                 database_support,
             ],
             tasks=[
+                resolve_question,
                 answer_tchnical_question,
                 answer_database_question,
             ],
-            process=Process.sequential,
+            process=Process.hierarchical,
             verbose=True,
+            manager_agent=leader_support,
+            embedder={
+                "provider": "google",
+                "config": {
+                    "model": "models/text-embedding-004",
+                    "api_key": getenv("GEMINI_API_KEY"),
+                },
+            },
         )
 
-    def start(self):
-        self.__crew.kickoff(
-            inputs={"topic": "Tecnologia", "current_time": str(datetime.now())}
-        )
+    def start(self, question: str, company_id: str):
+        self.__crew.kickoff(inputs={"question": question, "company_id": company_id})
 
     def __get_deepseek_llm(self):
         groq_api_key = getenv("GROQ_API_KEY")
@@ -86,7 +103,7 @@ class ChatbotSquad:
         groq_api_key = getenv("GROQ_API_KEY")
         llm = LLM(
             api_key=groq_api_key,
-            model="groq/llama3-70b-8192",
+            model="groq/llama-3.3-70b-versatile",
             max_tokens=600,
             temperature=0,
         )
@@ -97,6 +114,16 @@ class ChatbotSquad:
         llm = LLM(
             api_key=groq_api_key,
             model="groq/mistral-saba-24b",
+            max_tokens=600,
+            temperature=0,
+        )
+        return llm
+
+    def __get_gemini_llm(self):
+        groq_api_key = getenv("GEMINI_API_KEY")
+        llm = LLM(
+            api_key=groq_api_key,
+            model="gemini/gemini-1.5-flash",
             max_tokens=600,
             temperature=0,
         )

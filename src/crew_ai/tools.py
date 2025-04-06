@@ -1,29 +1,28 @@
 from os import getenv
+from typing import Any
 
 from crewai.tools import tool
 from langchain_community.tools.sql_database.tool import (
     InfoSQLDatabaseTool,
     ListSQLDatabaseTool,
-    QuerySQLCheckerTool,
-    QuerySQLDataBaseTool,
 )
+from langchain_community.tools import QuerySQLDatabaseTool
 from langchain_community.utilities.sql_database import SQLDatabase
+
+database = SQLDatabase.from_uri(getenv("DATABASE_URI"))
 
 
 class ChabotTools:
-    def __init__(self):
-        self.database = SQLDatabase.from_uri(getenv("DATABASE_URI"))
-
     @tool("list database tables")
-    def list_database_tables(self) -> str:
+    def list_database_tables() -> Any:
         """
         List all tables in the database.
         """
-        database_tool = ListSQLDatabaseTool(db=self.database)
+        database_tool = ListSQLDatabaseTool(db=database)
         return database_tool.invoke("")
 
     @tool("describe database tables")
-    def describe_database_tables(self, tables: str) -> str:
+    def describe_database_tables(tables: str) -> Any:
         """
         Input a comma-separated list of table names, output is the schema and sample rows for those tables. Be sure that the tables exist by calling `list_tables` first!
 
@@ -37,11 +36,12 @@ class ChabotTools:
           tables = "products, employees"
           describe_database_tables(tables)
         """
-        database_tool = InfoSQLDatabaseTool(db=self.database)
+        print("TABLES ->" + tables)
+        database_tool = InfoSQLDatabaseTool(db=database)
         return database_tool.invoke(tables)
 
     @tool("execute SQL query")
-    def execute_sql_query(self, query: str) -> str:
+    def execute_sql_query(query: str) -> Any:
         """
         Execute a SQL query on the database. Only read-only queries (SELECT) are allowed, it is not possible to modify the database.
 
@@ -51,18 +51,8 @@ class ChabotTools:
         Returns:
           string: the result of the SQL query.
         """
-        database_tool = QuerySQLDataBaseTool(
-            db=self.database,
+        database_tool = QuerySQLDatabaseTool(
+            db=database,
         )
-        return database_tool.invoke(query)
-
-    @tool("check SQL query")
-    def check_sql_query(self, query: str) -> str:
-        """
-        Double check the SQL query to see if it is valid. Always use this tool before executing a query to using `execute_sql_query`.
-
-        Args:
-          query (string): the SQL query to check.
-        """
-        database_tool = QuerySQLCheckerTool(db=self.database)
+        print("QUERY ->" + query)
         return database_tool.invoke(query)

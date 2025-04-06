@@ -1,3 +1,5 @@
+Stocker .FAQ
+
 📌 1. O que é o Stocker?
 Stocker é uma plataforma SaaS (Software as a Service) para gestão de estoque, que permite monitorar, controlar e analisar movimentações de produtos. Ele funciona totalmente na nuvem e pode ser acessado de qualquer dispositivo com internet.
 
@@ -20,7 +22,7 @@ Não, infelizmente o Stocker ainda não possui capacidade de integração com ou
 Sim. Toda comunicação é criptografada (HTTPS), os dados são armazenados em servidores seguros com backups automáticos e conformidade com a LGPD.
 
 💸 9. O Stocker tem versão gratuita?
-Sim! O plano gratuito permite gerenciar até 100 produtos. Para mais funcionalidades e usuários, é possível fazer upgrade para os planos pagos.
+Sim! Stocker é totalmente gratuito
 
 🧑‍💻 10. Como entro em contato com o suporte?
 Você pode entrar em contato pelo e-mail: stockerteampr@gmail.com.

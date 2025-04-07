@@ -33,7 +33,7 @@ class ChatbotSquad:
         pdf_source = PDFKnowledgeSource(file_paths=["user-guide.pdf"])
 
         agents = ChatbotAgents()
-        leader_support = agents.leader_support(llama_llm)
+        leader_support = agents.leader_support(qwen_llm)
         technical_support = agents.technical_support(
             [text_source, pdf_source], gemini_llm
         )
@@ -80,11 +80,11 @@ class ChatbotSquad:
         return llm
 
     def __get_qwen_llm(self):
-        groq_api_key = getenv("GROQ_API_KEY")
+        groq_api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
+            base_url="https://openrouter.ai/api/v1",
             api_key=groq_api_key,
-            model="groq/qwen-2.5-32b",
-            max_tokens=600,
+            model="openrouter/deepseek/deepseek-r1",
             temperature=0,
         )
         return llm

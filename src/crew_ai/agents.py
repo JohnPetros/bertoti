@@ -21,8 +21,6 @@ class ChatbotAgents:
             You must ensure that every user is routed to the right specialist, and maintain a high standard of clarity, speed, and effectiveness in the support experience.
             """
             ),
-            max_iter=2,
-            max_tokens=200,
             llm=llm,
             allow_delegation=True,
             verbose=True,

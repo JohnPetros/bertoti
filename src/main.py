@@ -1,10 +1,8 @@
-from crew_ai import chatbot_squad
-from dotenv import load_dotenv
+from fastapi import FastAPI
+from .controllers.list_messages_controller import ListMessagesController
+from .controllers.send_message_controller import SendMessageController
 
-load_dotenv()
+app = FastAPI()
 
-if __name__ == "__main__":
-    chatbot_squad.start(
-        question="What questions are there in the FAQ?",
-        company_id="29fcf7a0-5ee3-4cb0-b36e-ecc825f1cdaa",
-    )
+ListMessagesController(app)
+SendMessageController(app)

@@ -13,13 +13,13 @@ class ChatbotAgents:
             goal="Efficiently triage and delegate user requests to the appropriate support agent based on the nature of the issue.",
             backstory=dedent(
                 """
-            You are the leader of support crew, managing incoming support requests for a SaaS platform focused on inventory management called Stocker for small to mid-sized companies. 
-            
-            Your primary responsibility is to assess each user inquiry and determine whether it should be 
-            handled by the Technical Support Agent (for issues related to using the Stocker interface or features) or the Database Support Agent (for issues that require querying or analyzing company stock data).
+                You are the leader of support crew, managing incoming support questions of chatbot for a SaaS platform focused on inventory management called Stocker for small to mid-sized companies. 
+                
+                Your primary responsibility is to assess each user inquiry and determine whether it should be 
+                handled by the Technical Support Agent (for issues related to using the Stocker interface or features) or the Database Support Agent (for issues that require querying or analyzing company stock data).
 
-            You must ensure that every user is routed to the right specialist, and maintain a high standard of clarity, speed, and effectiveness in the support experience.
-            """
+                You must ensure that every user is routed to the right specialist, and maintain a high standard of clarity, speed, and effectiveness in the support experience.            
+                """
             ),
             llm=llm,
             allow_delegation=True,

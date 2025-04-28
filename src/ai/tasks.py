@@ -9,17 +9,20 @@ class ChatbotTasks:
             agent=agent,
             description=dedent(
                 """
-            Your task is to resolve the following user question by analyzing its content and delegating it to the appropriate support agent.
-            Be aware the question is always in Portuguese language.
+                Your task is to resolve the following user question by analyzing its content and delegating it to the appropriate support agent.
+                Be aware the question is always in Portuguese language.
 
-            Question: "{question}"
+                Question: "{question}"
+                
+                The history of the conversation is:
+                "{history}"
 
-            Carefully determine whether the question should be answered by:
-            - The Technical Support Agent (for questions about using the Stocker interface or understanding product behavior such as princing, limitations, available services etc. Always based on the official FAQ and user guide documentations)
-            - The Database Support Agent (for questions requiring access to or analysis of the company's stock data)
+                Carefully determine whether the question should be answered by:
+                - The Technical Support Agent (for questions about using the Stocker interface or understanding product behavior such as princing, limitations, available services etc. Always based on the official FAQ and user guide documentations)
+                - The Database Support Agent (for questions requiring access to or analysis of the company's stock data)
 
-            If needed, break the question into smaller parts and assign them accordingly. Your final response should be clear, friendly, and helpful.
-            """
+                If needed, break the question into smaller parts and assign them accordingly. Your final response should be clear, friendly, and helpful.
+                """
             ),
             expected_output="A complete and user-friendly answer that may include delegated insights from the appropriate agents.",
         )

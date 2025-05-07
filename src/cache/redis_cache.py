@@ -4,9 +4,9 @@ from redis import Redis
 class RedisCache:
     def __init__(self):
         self._redis = Redis(
-            host="internal-satyr-11463.upstash.io",
+            host="infinite-starfish-31994.upstash.io",
             port=6379,
-            password="ASzHAAIjcDFiOWFlNzZmNmZkZTg0YzAyYjFhNDdhZTM1YTllZjAxNXAxMA",
+            password="AXz6AAIjcDFkYWQ5N2Q0Mjg2NGI0ZjdiYTVjZTNjOWVkZmRmMDZhYXAxMA",
             ssl=True,
         )
 

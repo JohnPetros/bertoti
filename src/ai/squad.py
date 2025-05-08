@@ -1,26 +1,28 @@
-from os import getenv
-from datetime import datetime
-from json import dumps, loads
+from os import getenv, environ
+
 
 from crewai import Crew, Process, LLM
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 
+from src.core.structures import ChatMessage
+from src.database import chat_message_repository
+
 from .agents import ChatbotAgents
 from .tasks import ChatbotTasks
 from .tools import ChabotTools
-from ..cache.redis_cache import RedisCache
+
+environ["CREWAI_DISABLE_TELEMETRY"] = "true"
 
 
 class ChatbotSquad:
     def __init__(self):
-        # deepseek_llm = self.__get_deepseek_llm()
-        # gemma_llm = self.__get_gemma_llm()
-        # llama_llm = self.__get_llama_llm()
+        deepseek_llm = self.__get_deepseek_llm()
+        gemma_llm = self.__get_gemma_llm()
+        llama_llm = self.__get_llama_llm()
         # mistral_llm = self.__get_mistral_llm()
         gemini_llm = self.__get_gemini_llm()
         qwen_llm = self.__get_qwen_llm()
-        self.__cache = RedisCache()
 
         database_tools = [
             ChabotTools.list_database_tables,
@@ -34,11 +36,11 @@ class ChatbotSquad:
         pdf_source = PDFKnowledgeSource(file_paths=["user-guide.pdf"])
 
         agents = ChatbotAgents()
-        leader_support = agents.leader_support(qwen_llm)
+        leader_support = agents.leader_support(deepseek_llm)
         technical_support = agents.technical_support(
-            [text_source, pdf_source], gemini_llm
+            [text_source, pdf_source], deepseek_llm
         )
-        database_support = agents.database_support(database_tools, gemini_llm)
+        database_support = agents.database_support(database_tools, deepseek_llm)
 
         tasks = ChatbotTasks()
         resolve_question = tasks.resolve_question(leader_support)
@@ -68,65 +70,72 @@ class ChatbotSquad:
         )
 
     def start(self, question: str, company_id: str, user_id: str) -> str:
-        cache_key = f"company:{company_id}:user:{user_id}:messages"
-
-        history = self.__get_history(cache_key)
-        self.__update_history(cache_key, "user", question)
+        history = self.__get_history(company_id, user_id)
+        # self.__save_history(question, "user", company_id, user_id)
 
         answer = self.__crew.kickoff(
             inputs={"question": question, "company_id": company_id, "history": history},
         )
 
-        self.__update_history(cache_key, "bot", answer.raw)
+        # self.__save_history(answer.raw, "bot", company_id, user_id)
 
         return answer.raw
 
-    def save_message(self, messageContent: str, sender: str):
-        message = {
-            "content": messageContent,
-            "sender": sender,
-            "timestamp": datetime.now().isoformat(),
-        }
-        key = f"company:{self.company_id}:user:{self.user_id}:messages"
-        self._cache.add_item(key, dumps(message))
+    def __save_history(
+        self, messageContent: str, sender: str, company_id: str, user_id: str
+    ):
+        message = ChatMessage(
+            content=messageContent,
+            sender=sender,
+            company_id=company_id,
+            user_id=user_id,
+        )
+        chat_message_repository.add(message)
+
+    def __get_history(self, company_id: str, user_id: str) -> str:
+        messages = chat_message_repository.find_many_by_user_and_company(
+            user_id, company_id
+        )
+        return "\n".join(
+            [f"{message.sender}: {message.content}" for message in messages]
+        )
 
     def __get_deepseek_llm(self):
-        groq_api_key = getenv("GROQ_API_KEY")
+        # api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
-            api_key=groq_api_key,
-            model="groq/deepseek-r1-distill-llama-70b",
-            max_tokens=1250,
+            base_url="https://openrouter.ai/api/v1",
+            api_key="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",
+            model="openrouter/deepseek/deepseek-r1:free",
             temperature=0,
         )
         return llm
 
     def __get_qwen_llm(self) -> LLM:
         api_key = getenv("OPEN_ROUTER_API_KEY")
-        print("api_key", api_key)
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key=api_key,
-            model="openrouter/qwen/qwq-32b:free",
+            api_key="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",
+            model="openrouter/featherless/qwerky-72b:free",
             temperature=0,
         )
         return llm
 
     def __get_gemma_llm(self):
-        groq_api_key = getenv("GROQ_API_KEY")
+        api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
-            api_key=groq_api_key,
-            model="groq/gemma2-9b-it",
-            max_tokens=600,
+            base_url="https://openrouter.ai/api/v1",
+            api_key="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",
+            model="openrouter/google/gemma-3-27b-it:free",
             temperature=0,
         )
         return llm
 
     def __get_llama_llm(self):
-        groq_api_key = getenv("GROQ_API_KEY")
+        api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
-            api_key=groq_api_key,
-            model="groq/llama-3.3-70b-versatile",
-            max_tokens=600,
+            base_url="https://openrouter.ai/api/v1",
+            api_key="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",
+            model="openrouter/meta-llama/llama-4-maverick:free",
             temperature=0,
         )
         return llm
@@ -150,20 +159,3 @@ class ChatbotSquad:
             temperature=0,
         )
         return llm
-
-    def __get_history(self, key: str) -> str:
-        messages = self.__cache.get_last_items(key)
-        history = "No message yet"
-
-        for message in messages:
-            message = loads(message)
-            history += f"{message['sender']}: {message['content']}\n"
-        return history
-
-    def __update_history(self, key: str, sender: str, message_content: str) -> None:
-        message = {
-            "content": message_content,
-            "sender": sender,
-            "timestamp": datetime.now().isoformat(),
-        }
-        self.__cache.add_item(key, dumps(message))

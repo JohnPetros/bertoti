@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from ..ai import ChatbotSquad
+
+from src.ai import ChatbotSquad
 
 
 class Request(BaseModel):
@@ -13,9 +14,15 @@ class SendMessageController:
     def __init__(self, app: FastAPI):
         @app.post("/message")
         async def _(request: Request):
-            return self.handle(request)
+            squad = ChatbotSquad()
+            answer = squad.start(
+                question=request.message,
+                company_id=request.company_id,
+                user_id=request.user_id,
+            )
+            return answer
 
-    def handle(self, request: Request):
+    def send_message(self, request: Request):
         squad = ChatbotSquad()
         answer = squad.start(
             question=request.message,

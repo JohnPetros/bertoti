@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "company_id": "29fcf7a0-5ee3-4cb0-b36e-ecc825f1cdaa",
   "user_id": "393e0147-b8de-4b89-bf4a-e29c3ff2ba9e",
-  "message": "Olá, tudo bem?"
+  "message": "Quantos produtos temos no estoque?"
 }
 
 ### List messages

@@ -36,7 +36,6 @@ class ChabotTools:
           tables = "products, employees"
           describe_database_tables(tables)
         """
-        print("TABLES ->" + tables)
         database_tool = InfoSQLDatabaseTool(db=database)
         return database_tool.invoke(tables)
 

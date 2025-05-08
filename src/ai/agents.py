@@ -24,6 +24,7 @@ class ChatbotAgents:
             llm=llm,
             allow_delegation=True,
             verbose=True,
+            max_iter=4,
         )
 
     def technical_support(

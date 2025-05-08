@@ -8,7 +8,7 @@ Content-Type: application/json
   "message": "Quantos produtos temos no estoque?"
 }
 
-### List messages
+### Get all messages
 GET http://127.0.0.1:8000/messages
 Content-Type: application/json
 

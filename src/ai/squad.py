@@ -38,9 +38,9 @@ class ChatbotSquad:
         agents = ChatbotAgents()
         leader_support = agents.leader_support(deepseek_llm)
         technical_support = agents.technical_support(
-            [text_source, pdf_source], deepseek_llm
+            [text_source, pdf_source], gemma_llm
         )
-        database_support = agents.database_support(database_tools, deepseek_llm)
+        database_support = agents.database_support(database_tools, gemma_llm)
 
         tasks = ChatbotTasks()
         resolve_question = tasks.resolve_question(leader_support)
@@ -101,10 +101,10 @@ class ChatbotSquad:
         )
 
     def __get_deepseek_llm(self):
-        # api_key = getenv("OPEN_ROUTER_API_KEY")
+        api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key="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",
+            api_key=api_key,
             model="openrouter/deepseek/deepseek-r1:free",
             temperature=0,
         )
@@ -114,8 +114,8 @@ class ChatbotSquad:
         api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key="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",
-            model="openrouter/featherless/qwerky-72b:free",
+            api_key=api_key,
+            model="openrouter/qwen/qwen3-235b-a22b:free",
             temperature=0,
         )
         return llm
@@ -124,7 +124,7 @@ class ChatbotSquad:
         api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key="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",
+            api_key=api_key,
             model="openrouter/google/gemma-3-27b-it:free",
             temperature=0,
         )
@@ -134,7 +134,7 @@ class ChatbotSquad:
         api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key="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",
+            api_key=api_key,
             model="openrouter/meta-llama/llama-4-maverick:free",
             temperature=0,
         )

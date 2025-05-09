@@ -1,6 +1,6 @@
 from google.adk.agents import Agent
 
-from chatbot.sub_agents import dba_agent, po_agent
+from src.chatbot.sub_agents import dba_agent, po_agent
 
 # Quantos produtos existem no estoque?
 # Quanto custa o produto: 'Pequeno Concreto Frango'?
@@ -26,21 +26,12 @@ chatbot_agent = Agent(
           - Product data
           - Inventory reports
           - Historical data
-        - PO Agent: For all questions related to the Stocker platform as a product
-          Use this agent when users need:
-          - Information about the platform
-          - How to use the platform
-          - How to get support
 
         When working with sub-agents:
         1. Carefully analyze the user's question
         2. Delegate to appropriate sub-agent if needed
         3. Wait for sub-agent's response
-        4. Summarize the technical response in clear, user-friendly Portuguese
-        5. Do not mention database or SQL queries in your response
-        6. Ensure the final answer is complete and helpful
 
-        Remember: Your goal is to provide accurate, helpful support while maintaining a professional and friendly tone.
         """,
-    sub_agents=[dba_agent, po_agent],
+    sub_agents=[dba_agent],
 )

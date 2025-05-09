@@ -4,6 +4,7 @@ from os import getenv, environ
 from crewai import Crew, Process, LLM
 from crewai.knowledge.source.text_file_knowledge_source import TextFileKnowledgeSource
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
+from langchain_openai import ChatOpenAI
 
 from src.core.structures import ChatMessage
 from src.database import chat_message_repository
@@ -36,7 +37,7 @@ class ChatbotSquad:
         pdf_source = PDFKnowledgeSource(file_paths=["user-guide.pdf"])
 
         agents = ChatbotAgents()
-        leader_support = agents.leader_support(deepseek_llm)
+        leader_support = agents.leader_support(gemma_llm)
         technical_support = agents.technical_support(
             [text_source, pdf_source], gemma_llm
         )
@@ -64,7 +65,7 @@ class ChatbotSquad:
                 "provider": "google",
                 "config": {
                     "model": "models/text-embedding-004",
-                    "api_key": getenv("GEMINI_API_KEY"),
+                    "api_key": getenv("GOOGLE_API_KEY"),
                 },
             },
         )
@@ -96,6 +97,9 @@ class ChatbotSquad:
         messages = chat_message_repository.find_many_by_user_and_company(
             user_id, company_id
         )
+        if not len(messages):
+            return "No history registered yet"
+
         return "\n".join(
             [f"{message.sender}: {message.content}" for message in messages]
         )
@@ -104,7 +108,7 @@ class ChatbotSquad:
         api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key=api_key,
+            api_key="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",
             model="openrouter/deepseek/deepseek-r1:free",
             temperature=0,
         )
@@ -114,29 +118,45 @@ class ChatbotSquad:
         api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key=api_key,
+            api_key="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",
             model="openrouter/qwen/qwen3-235b-a22b:free",
             temperature=0,
         )
         return llm
 
     def __get_gemma_llm(self):
-        api_key = getenv("OPEN_ROUTER_API_KEY")
+        # llm = LLM(
+        #     model="lm_studio/gemma-3-12b-it",
+        #     base_url="http://127.0.0.1:1234/v1",
+        #     api_key="asdf",
+        # )
         llm = LLM(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=api_key,
-            model="openrouter/google/gemma-3-27b-it:free",
+            base_url="http://localhost:11434",
+            api_key="ollama",
+            model="ollama/gemma3:12b",
             temperature=0,
         )
+        # api_key = getenv("GOOGLE_API_KEY")
+        # llm = LLM(
+        #     api_key=api_key,
+        #     model="gemini/gemma-3-12b-it",
+        #     temperature=0,
+        #     max_tokens=100,
+        #     max_completion_tokens=100,
+        #     max_retries=1,
+        # )
         return llm
 
     def __get_llama_llm(self):
         api_key = getenv("OPEN_ROUTER_API_KEY")
         llm = LLM(
             base_url="https://openrouter.ai/api/v1",
-            api_key=api_key,
+            api_key="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",
             model="openrouter/meta-llama/llama-4-maverick:free",
             temperature=0,
+            max_tokens=150,
+            max_completion_tokens=150,
+            max_retries=3,
         )
         return llm
 
@@ -151,11 +171,13 @@ class ChatbotSquad:
         return llm
 
     def __get_gemini_llm(self):
-        groq_api_key = getenv("GEMINI_API_KEY")
+        groq_api_key = getenv("GOOGLE_API_KEY")
         llm = LLM(
             api_key=groq_api_key,
             model="gemini/gemini-1.5-flash",
-            max_tokens=600,
+            max_tokens=100,
+            max_completion_tokens=100,
+            max_retries=1,
             temperature=0,
         )
         return llm

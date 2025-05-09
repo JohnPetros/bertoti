@@ -17,13 +17,18 @@ class ChatbotTasks:
                 The history of the conversation is:
                 "{history}"
 
-                Carefully determine whether the question should be answered by:
-                - The Technical Support Agent (for questions about using the Stocker interface or understanding product behavior such as princing, limitations, available services etc. Always based on the official FAQ and user guide documentations)
-                - The Database Support Agent (for questions requiring access to or analysis of the company's stock data)
+                Determine whether to route to:
+                - Technical Support Agent (for Stocker interface, pricing, limitations, services - based on official docs)
+                - Database Support Agent (for stock data analysis)
 
-                If needed, break the question into smaller parts and assign them accordingly. Your final response should be clear, friendly, and helpful.
+                Break complex questions into parts if needed. Provide clear, friendly responses.
+                Do not mention the user or the company id in the answer.
+                The answer must be in Portuguese language.
+                The answer must be in a short and concise format.
+                Do not say technical details about database in the answer.
                 """
             ),
+            max_retries=3,
             expected_output="A complete and user-friendly answer that may include delegated insights from the appropriate agents.",
         )
 
@@ -32,19 +37,16 @@ class ChatbotTasks:
             agent=agent,
             description=dedent(
                 """
-                Your task is to carefully analyze the following user question and respond with a clear, accurate, and friendly explanation.
+                Your task is to analyze and respond to the user question with a clear, accurate explanation.
 
-                You must base your answer **strictly on the official Stocker user guide and the .FAQ documentation**. Do not use any other sources or assumptions.
+                Base your answer **strictly on Stocker's official user guide and FAQ**. If information isn't in these docs, politely decline to answer.
 
-                If the information required is not covered in those documents, politely inform the user that you cannot provide an answer.
-
-                Ensure your response is easy to understand, even for users with little or no technical background.
+                Keep the response simple and user-friendly.
                 
-                The answer must be less than 25 words.
-
                 User question: {question}
-                """,
+                """
             ),
+            max_retries=3,
             expected_output="A clear, concise, and user-friendly answer based on the official documentation.",
         )
 
@@ -53,11 +55,12 @@ class ChatbotTasks:
             agent=agent,
             description=dedent(
                 """
-                Perform a read-only query in a relational database for the company with ID: {company_id} for the question: {question}
+                Query the database for company ID: {company_id} to answer: {question}
 
-                ✅ Only SELECT operations are allowed.  
-                ❌ No INSERT, UPDATE, DELETE, or any other mutation operations are permitted.
+                SELECT only
+                No mutations allowed
                 """
             ),
+            max_retries=3,
             expected_output="A human answer to the user question without any sql query.",
         )

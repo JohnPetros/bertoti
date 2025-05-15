@@ -1,4 +1,7 @@
+from os import getenv
+
 from google.adk.agents import Agent
+from google.adk.models.lite_llm import LiteLlm
 
 from src.chatbot.sub_agents.dba.tools import (
     list_database_tables,
@@ -9,7 +12,11 @@ from src.chatbot.sub_agents.dba.tools import (
 
 dba_agent = Agent(
     name="dba",
-    model="gemini-2.0-flash",
+    model=LiteLlm(
+        base_url="https://openrouter.ai/api/v1",
+        model="openrouter/meta-llama/llama-3.1-8b-instruct:free",
+        api_key=getenv("OPENROUTER_API_KEY"),
+    ),
     description="Help the chatbot agent query and understand stock data from the database using provided tools.",
     instruction="""
         You are a Database Administrator (DBA) for Stocker, an inventory management platform.
@@ -39,6 +46,7 @@ dba_agent = Agent(
         - Never reveal company ID or technical details
         - Present information in simple, business-friendly terms
         - Only answer questions related to data related to the provided company
+        - Format the response in markdown format
         """,
     tools=[list_database_tables, describe_database_tables, execute_sql_query],
 )

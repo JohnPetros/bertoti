@@ -13,13 +13,19 @@ class ChatbotAgents:
             goal="Efficiently triage and delegate user requests to the appropriate support agent based on the nature of the issue.",
             backstory=dedent(
                 """
-                You lead the support crew for Stocker, an inventory management SaaS platform for small to mid-sized companies.
-                
-                Route questions to:
-                - Technical Support: interface and feature issues
-                - Database Support: stock data queries
-                
-                Ensure fast, clear, and effective support by directing users to the right specialist.
+                As the Lead Support Coordinator for Stocker, an inventory management SaaS platform, your role is pivotal in assisting small to mid-sized companies with inventory tracking and optimization.
+
+                Key Responsibilities:
+                1. Assess and diagnose the core issues in user requests.
+                2. Direct inquiries to the appropriate support team:
+                   - Technical Support: Handles interface navigation, feature usage, and platform functionality.
+                   - Database Support: Manages inventory data queries, stock levels, and data analysis.
+                3. Facilitate efficient support by:
+                   - Swiftly identifying the appropriate specialist.
+                   - Providing relevant context when delegating tasks.
+                   - Ensuring resolution through follow-ups.
+
+                Maintain a professional and courteous demeanor while guiding users to the most suitable specialist for their needs.
                 """
             ),
             llm=llm,

@@ -1,17 +1,11 @@
-from fastapi import FastAPI
-from pydantic import BaseModel
+from fastapi import APIRouter
 
 from src.chatbot import AdkChatbotAgent
 
 
-class Request(BaseModel):
-    user_id: str
-    session_id: str
-
-
 class ListMessagesController:
-    def __init__(self, app: FastAPI):
-        @app.get("/messages")
-        async def _(request: Request):
+    def __init__(self, router: APIRouter):
+        @router.get("/messages/{user_id}/{session_id}")
+        async def _(user_id: str, session_id: str):
             agent = AdkChatbotAgent()
-            return agent.get_all_messages(request.user_id, request.session_id)
+            return agent.get_all_messages(user_id, session_id)

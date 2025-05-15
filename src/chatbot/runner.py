@@ -15,26 +15,32 @@ class Runner:
         self.app_name = "Stocker Chatbot"
         self.session_service = DatabaseSessionService(db_url="sqlite:///./sqlite.db")
 
-    async def start(self, query: str, user_id: str, company_id: str):
+    async def answer_message(
+        self,
+        query: str,
+        company_id: str,
+        user_id: str,
+        session_id: str,
+    ):
         initial_state = {
             "user_id": user_id,
             "company_id": company_id,
         }
-        session_id = None
-
-        existing_sessions = self.session_service.list_sessions(
-            app_name=self.app_name, user_id=user_id
+        session = self.session_service.get_session(
+            app_name=self.app_name,
+            user_id=user_id,
+            session_id=session_id,
         )
 
-        if existing_sessions and len(existing_sessions.sessions) > 0:
-            session_id = existing_sessions.sessions[0].id
+        if session:
+            session_id = session.id
         else:
-            new_session = self.session_service.create_session(
+            session = self.session_service.create_session(
                 app_name=self.app_name,
                 user_id=user_id,
                 state=initial_state,
             )
-            session_id = new_session.id
+            session_id = session.id
 
         runner = AdkRunner(
             agent=chatbot_agent,

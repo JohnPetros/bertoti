@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "company_id": "29fcf7a0-5ee3-4cb0-b36e-ecc825f1cdaa", 
   "user_id": "393e0147-b8de-4b89-bf4a-e29c3ff2ba9e",
-  "message": "Qual o produto mais caro?"
+  "message": "Como posso redefinir minha senha?"
 }
 
 ### Get all messages
@@ -13,6 +13,6 @@ GET http://127.0.0.1:8000/messages
 Content-Type: application/json
 
 {
-  "company_id": "29fcf7a0-5ee3-4cb0-b36e-ecc825f1cdaa",
-  "user_id": "393e0147-b8de-4b89-bf4a-e29c3ff2ba9e"
+  "user_id": "393e0147-b8de-4b89-bf4a-e29c3ff2ba9e",
+  "session_id": "bdc8b898-459e-47ec-8b8c-c86f384b8e6b"
 }

@@ -6,6 +6,7 @@ from src.controllers import ListMessagesController, SendMessageController
 
 load_dotenv()
 
+
 app = FastAPI()
 
 ListMessagesController(app)

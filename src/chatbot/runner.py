@@ -21,10 +21,12 @@ class Runner:
         company_id: str,
         user_id: str,
         session_id: str,
+        user_role: str,
     ):
         initial_state = {
             "user_id": user_id,
             "company_id": company_id,
+            "role": user_role,
         }
         session = self.session_service.get_session(
             app_name=self.app_name,
@@ -49,9 +51,6 @@ class Runner:
         )
 
         self.__add_user_query_to_history(user_id, session_id, query)
-
-        print(f"Query: {query}")
-        print(f"Session ID: {session_id}")
 
         agent_response = await self.__call_agent_async(
             runner=runner,
@@ -101,13 +100,6 @@ class Runner:
 
             updated_state = session.state.copy()
             updated_state["interaction_history"] = interaction_history
-
-            self.session_service.create_session(
-                app_name=self.app_name,
-                user_id=user_id,
-                session_id=session_id,
-                state=updated_state,
-            )
         except Exception as e:
             print(f"Error updating interaction history: {e}")
             pass
